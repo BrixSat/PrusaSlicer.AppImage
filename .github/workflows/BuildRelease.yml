@@ -90,23 +90,7 @@ jobs:
 
     - name: Set build time
       run: echo "BUILD_TIME=$(date -u +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
-
-    - name: Send success mail
-      if: success()
-      uses: dawidd6/action-send-mail@v3
-      with:
-        server_address: smtp.web.de
-        server_port: 587
-        username: ${{ secrets.MAIL_USER }}
-        password: ${{ secrets.MAIL_PASS }}
-        subject: ✅ PrusaSlicer.AppImage Build for Version ${{ env.VERSION }} erfolgreich
-        body: |
-          Der Build für PrusaSlicer.AppImage Version ${{ env.VERSION }} wurde erfolgreich abgeschlossen.
-          Zeit: ${{ env.BUILD_TIME }}
-          Repository: ${{ github.repository }}
-        to: ${{ secrets.MAIL_USER }}
-        from: GitHub Actions via Web.de <${{ secrets.MAIL_USER }}>
-
+      
     - name: Trigger CheckReleases again
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
