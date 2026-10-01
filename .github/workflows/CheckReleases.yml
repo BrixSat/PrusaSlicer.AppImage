@@ -6,11 +6,14 @@ on:
   schedule:
     - cron: '20 0 1/7 * *' # every every 7th Day of Month at 00:20
     #- cron: '20 0 * * *' # every Day at 00:20
+permissions:
+  actions: write
+  contents: read
 defaults:
   run:
     shell: bash
 env:
-  GH_TOKEN: ${{ secrets.PAD }}
+  GH_TOKEN: ${{ secrets.PAD || github.token }}
   REPO: ${{ github.repository }}
 jobs:
   check:
