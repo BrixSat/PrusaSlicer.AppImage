@@ -4,8 +4,7 @@ on:
   workflow_dispatch:
   #push:
   schedule:
-    - cron: '20 0 1/7 * *' # every every 7th Day of Month at 00:20
-    #- cron: '20 0 * * *' # every Day at 00:20
+    - cron: '0 6 * * *' # every Day at 06:00 UTC
 permissions:
   actions: write
   contents: read
@@ -36,7 +35,7 @@ jobs:
               echo $i >>$tmpfile
             fi
           done
-          sort <$tmpfile >$2
+          sort -V <$tmpfile >$2
           rm -f $tmpfile
          }
          
@@ -45,7 +44,12 @@ jobs:
         cd "$GITHUB_WORKSPACE"
         GetReleases "$PRUSA_REPO" "./Prusa.Releases"
         GetReleases "$GITHUB_REPOSITORY" "./This.Releases"
-        VERSION=$(head -1 <<< "$(comm -23 Prusa.Releases This.Releases)")
+        # Only build the newest stable release, and only if it is not released here yet
+        LATEST=$(tail -1 Prusa.Releases)
+        VERSION=""
+        if [[ -n "$LATEST" ]] && ! grep -qxF "$LATEST" This.Releases; then
+          VERSION="$LATEST"
+        fi
         rm -f "./Prusa.Releases" "./This.Releases"
 
         # Check if a workflow run for workflow BuildRelease.yml is in progress
